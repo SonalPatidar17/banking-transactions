@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:mongo="http://www.mulesoft.org/schema/mule/mongo"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/mongo http://www.mulesoft.org/schema/mule/mongo/current/mule-mongo.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="getAllTransactionsByAccountNumberFlow" doc:id="5cb09ca1-4ed0-4d75-8857-ceed903646ed" >
+		<ee:transform doc:name="Transform Message" doc:id="f0a5cecd-0f51-4e0b-b837-466d5bc39fe1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"AccountNumber": attributes.queryParams.AccountNumber
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<mongo:find-documents doc:name="get all records by account number" doc:id="af69c4b5-b5a1-4b29-b7b3-9966dd8a412e" config-ref="MongoDB_Config" collectionName="Employee" fields="Id,AccountNumber,LastTranDate,TransactionAmount,SourceCode">
+			<mongo:query ><![CDATA[#[payload]]]></mongo:query>
+		</mongo:find-documents>
+<ee:transform doc:name="Transform Message" doc:id="9cb1b02c-7d59-43cf-9168-810e5b502cfd" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
